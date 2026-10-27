@@ -4,15 +4,18 @@ Design an 8-bit parameterized 2:1 Multiplexer.
 
 ### Module Specification
 
-```SystemVerilog
 module mux2 #(parameter WIDTH = 8)(
-    input  logic [WIDTH-1:0] d0,   // Input 0
-    input  logic [WIDTH-1:0] d1,   // Input 1
-    input  logic              s,   // Select line
-    output logic [WIDTH-1:0]  y    // Output
-    );
-```
+    input  logic [WIDTH-1:0] d0,
+    input  logic [WIDTH-1:0] d1,
+    input  logic             s,
+    output logic [WIDTH-1:0] y
+);
 
+    always_comb begin
+        y = s ? d1 : d0;
+    end
+
+endmodule
 ### Interface
 
 > [!IMPORTANT]

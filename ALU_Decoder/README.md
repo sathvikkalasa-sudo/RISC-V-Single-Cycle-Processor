@@ -5,6 +5,28 @@ Design the ALU Control Unit that generates the ALU operation signals based on in
 ### Module Specification
 
 ```SystemVerilog
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 16.10.2026 14:11:59
+// Design Name: 
+// Module Name: aludec
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
 module aludec(
     input  logic        opb5,      // instruction bit [5] of opcode
     input  logic [2:0]  funct3,    // funct3 field of instruction
@@ -12,6 +34,46 @@ module aludec(
     input  logic [1:0]  ALUOp,     // high-level ALU operation
     output logic [2:0]  ALUControl // ALU operation code
 );
+
+    always_comb begin
+        case (ALUOp)
+
+            // ALUOp = 00: Addition (LW, SW, ADDI, etc.)
+            2'b00: ALUControl = 3'b000;
+
+            // ALUOp = 01: Branch instructions (BEQ)
+            2'b01: ALUControl = 3'b001;
+
+            // ALUOp = 10: R-type and I-type arithmetic/logical instructions
+            2'b10: begin
+                case (funct3)
+
+                    3'b000: begin
+                        // SUB when funct7[5] = 1 and opcode bit [5] = 1
+                        if (opb5 && funct7b5)
+                            ALUControl = 3'b001; // SUB
+                        else
+                            ALUControl = 3'b000; // ADD / ADDI
+                    end
+
+                    3'b111: ALUControl = 3'b010; // AND / ANDI
+                    3'b110: ALUControl = 3'b011; // OR / ORI
+                    3'b010: ALUControl = 3'b101; // SLT / SLTI
+
+                    default: ALUControl = 3'b000;
+
+                endcase
+            end
+
+            // Default: ADD
+            default: ALUControl = 3'b000;
+
+        endcase
+    end
+
+endmodule
+
+
 ```
 
 ### Working

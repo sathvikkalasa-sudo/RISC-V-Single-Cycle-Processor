@@ -4,18 +4,59 @@ This module wraps together the controller and datapath to form a complete single
 
 ### Module Specification
 
-```SystemVerilog
 module riscvsingle(
-    input  logic        clk,       // Clock
-    input  logic        reset,     // Asynchronous reset
-    output logic [31:0] PC,        // Program counter
-    input  logic [31:0] Instr,     // Current instruction
-    output logic        MemWrite,  // Data memory write enable
-    output logic [31:0] ALUResult, // Result from ALU
-    output logic [31:0] WriteData, // Data to write to memory
-    input  logic [31:0] ReadData   // Data read from memory
+    input  logic        clk,
+    input  logic        reset,
+    output logic [31:0] PC,
+    input  logic [31:0] Instr,
+    output logic        MemWrite,
+    output logic [31:0] ALUResult,
+    output logic [31:0] WriteData,
+    input  logic [31:0] ReadData
 );
-```
+
+    logic [1:0] ResultSrc;
+    logic       PCSrc;
+    logic       ALUSrc;
+    logic       RegWrite;
+    logic       Jump;
+    logic [1:0] ImmSrc;
+    logic [2:0] ALUControl;
+    logic       Zero;
+
+    controller controller_unit (
+        .op         (Instr[6:0]),
+        .funct3     (Instr[14:12]),
+        .funct7b5   (Instr[30]),
+        .Zero       (Zero),
+        .ResultSrc  (ResultSrc),
+        .MemWrite   (MemWrite),
+        .PCSrc      (PCSrc),
+        .ALUSrc     (ALUSrc),
+        .RegWrite   (RegWrite),
+        .Jump       (Jump),
+        .ImmSrc     (ImmSrc),
+        .ALUControl (ALUControl)
+    );
+
+    datapath datapath_unit (
+        .clk        (clk),
+        .reset      (reset),
+        .ResultSrc  (ResultSrc),
+        .PCSrc      (PCSrc),
+        .ALUSrc     (ALUSrc),
+        .RegWrite   (RegWrite),
+        .ImmSrc     (ImmSrc),
+        .ALUControl (ALUControl),
+        .Zero       (Zero),
+        .PC         (PC),
+        .Instr      (Instr),
+        .ALUResult  (ALUResult),
+        .WriteData  (WriteData),
+        .ReadData   (ReadData)
+    );
+
+endmodule
 
 >[!TIP]
 >Think what could "wrap" mean here :D
